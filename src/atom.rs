@@ -48,7 +48,7 @@ mod tests {
     fn test_distance() {
         let atom1 = Atom::new(Some("H".into()), Some(1), Some(1.008), (0.0, 0.0, 0.0));
         let atom2 = Atom::new(Some("O".into()), Some(8), Some(15.999), (1.0, 1.0, 1.0));
-        assert_eq!(Atom::distance(&atom1, &atom2), (3.0).sqrt());
+        assert_eq!(Atom::distance(&atom1, &atom2), (3.0_f64).sqrt());
     }
 
     #[test]
@@ -56,6 +56,6 @@ mod tests {
         let atom1 = Atom::new(Some("H".into()), Some(1), Some(1.008), (0.0, 0.0, 0.0));
         let atom2 = Atom::new(Some("O".into()), Some(8), Some(15.999), (1.0, 0.0, 0.0));
         let atom3 = Atom::new(Some("H".into()), Some(1), Some(1.008), (0.0, 1.0, 0.0));
-        assert_eq!(Atom::angle(&atom2, &atom1, &atom3), std::f64::consts::FRAC_PI_2);
+        assert_eq!(Atom::angle(&atom1, &atom2, &atom3), std::f64::consts::FRAC_PI_2);
     }
 }

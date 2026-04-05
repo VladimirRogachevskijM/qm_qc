@@ -1,3 +1,5 @@
+mod atom;
+
 fn main() {
-    println!("Hello, world!");
+
 }
