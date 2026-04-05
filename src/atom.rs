@@ -15,6 +15,15 @@ impl Atom {
         }
     }
 
+    fn from_coords(coordinates: (f64, f64, f64)) -> Self {
+        Atom {
+            symbol: None,
+            atomic_number: None,
+            mass: None,
+            coordinates,
+        }
+    }
+
     pub fn distance(&self, other: &Atom) -> f64 {
         let dx = self.coordinates.0 - other.coordinates.0;
         let dy = self.coordinates.1 - other.coordinates.1;
@@ -52,10 +61,48 @@ mod tests {
     }
 
     #[test]
+    fn test_distance_zero() {
+        let atom1 = Atom::from_coords((-0.25, 0.33, 66000.25));
+        let atom2 = Atom::from_coords((-0.25, 0.33, 66000.25));
+        assert_eq!(Atom::distance(&atom1, &atom2), 0.0);
+    }
+
+    #[test]
+    fn test_distance_negative() {
+        let atom1 = Atom::from_coords((-0.25, 0.33, 66000.25));
+        let atom2 = Atom::from_coords((0.25, -0.33, -66000.25));
+        assert_eq!(Atom::distance(&atom1, &atom2), (0.5_f64*0.5_f64 + 0.66_f64*0.66_f64 + 132000.5_f64*132000.5_f64).sqrt());
+    }
+
+    #[test]
     fn test_angle() {
         let atom1 = Atom::new(Some("H".into()), Some(1), Some(1.008), (0.0, 0.0, 0.0));
         let atom2 = Atom::new(Some("O".into()), Some(8), Some(15.999), (1.0, 0.0, 0.0));
         let atom3 = Atom::new(Some("H".into()), Some(1), Some(1.008), (0.0, 1.0, 0.0));
         assert_eq!(Atom::angle(&atom1, &atom2, &atom3), std::f64::consts::FRAC_PI_2);
+    }
+
+    #[test]
+    fn test_angle_collinear() {
+        let atom1 = Atom::new(Some("H".into()), Some(1), Some(1.008), (0.0, 0.0, 0.0));
+        let atom2 = Atom::new(Some("O".into()), Some(8), Some(15.999), (1.0, 0.0, 0.0));
+        let atom3 = Atom::new(Some("H".into()), Some(1), Some(1.008), (2.0, 0.0, 0.0));
+        assert_eq!(Atom::angle(&atom1, &atom2, &atom3), 0.0);
+    }
+
+    #[test]
+    fn test_angle_opposite() {
+        let atom1 = Atom::new(Some("H".into()), Some(1), Some(1.008), (0.0, 0.0, 0.0));
+        let atom2 = Atom::new(Some("O".into()), Some(8), Some(15.999), (1.0, 0.0, 0.0));
+        let atom3 = Atom::new(Some("H".into()), Some(1), Some(1.008), (-1.0, 0.0, 0.0));
+        assert_eq!(Atom::angle(&atom1, &atom2, &atom3), std::f64::consts::PI);
+    }
+
+    #[test]
+    fn test_angle_pi_4() {
+        let atom1 = Atom::new(Some("H".into()), Some(1), Some(1.008), (2.0, 0.0, 0.0));
+        let atom2 = Atom::new(Some("O".into()), Some(8), Some(15.999), (0.0, 0.0, 0.0));
+        let atom3 = Atom::new(Some("H".into()), Some(1), Some(1.008), (1.0, 1.0, 0.0));
+        assert!(Atom::angle(&atom1, &atom2, &atom3) - std::f64::consts::FRAC_PI_4 < 1e-10);
     }
 }
